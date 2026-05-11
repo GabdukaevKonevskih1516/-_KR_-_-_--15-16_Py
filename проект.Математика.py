@@ -1,11 +1,15 @@
 """
-Математический помощник - приложение для решения математических задач.
+<summary>
+Модуль "Математический помощник".
 
-Модуль предоставляет графический интерфейс для:
-- решения квадратных уравнений
-- построения графиков функций
-- поиска точек пересечения функций
-- конвертации систем счисления
+Предоставляет графическое приложение для решения математических задач,
+включая квадратные уравнения, построение графиков, поиск пересечений
+функций и конвертацию систем счисления.
+</summary>
+<remarks>
+Требует установки библиотек: numpy, matplotlib.
+Поддерживает Python версии 3.7 и выше.
+</remarks>
 """
 
 import tkinter as tk
@@ -19,29 +23,34 @@ from typing import List, Tuple, Optional, Any
 
 class MathApp:
     """
+    <summary>
     Главный класс приложения "Математический Помощник".
-
+    </summary>
+    <remarks>
     Реализует графический интерфейс пользователя (GUI) и логику вычислений.
-    Приложение состоит из 4 вкладок для различных математических задач.
-
-    Attributes:
-        root (tk.Tk): Корневой объект окна Tkinter
-        notebook (ttk.Notebook): Виджет для организации вкладок
-        tab_quadratic (ttk.Frame): Вкладка квадратного уравнения
-        tab_plot (ttk.Frame): Вкладка построения графиков
-        tab_intersect (ttk.Frame): Вкладка поиска пересечений
-        tab_systems (ttk.Frame): Вкладка систем счисления
+    Приложение состоит из 4 вкладок для различных математических задач:
+    - Квадратное уравнение
+    - График функции
+    - Пересечение функций
+    - Системы счисления
+    </remarks>
     """
+
+    # ==================== КОНСТРУКТОР ====================
 
     def __init__(self, root: tk.Tk) -> None:
         """
+        <summary>
         Конструктор класса MathApp.
-
-        Args:
-            root (tk.Tk): Корневой объект окна Tkinter
-
-        Returns:
-            None
+        </summary>
+        <param name="root">
+        Корневой объект окна Tkinter, в котором размещается приложение.
+        </param>
+        <returns>None</returns>
+        <remarks>
+        Выполняет настройку главного окна, создает вкладки
+        и инициализирует интерфейс каждой вкладки.
+        </remarks>
         """
         self.root = root
         self.root.title("Математический Помощник")
@@ -74,13 +83,14 @@ class MathApp:
 
     def _setup_quadratic_tab(self) -> None:
         """
+        <summary>
         Настройка графических элементов вкладки решения квадратных уравнений.
-
-        Создает поля ввода для коэффициентов a, b, c, кнопку вычисления
-        и метку для отображения результата.
-
-        Returns:
-            None
+        </summary>
+        <returns>None</returns>
+        <remarks>
+        Создает поля ввода для коэффициентов a, b, c,
+        кнопку вычисления и метку для отображения результата.
+        </remarks>
         """
         tk.Label(
             self.tab_quadratic,
@@ -122,16 +132,24 @@ class MathApp:
 
     def _solve_quadratic(self) -> None:
         """
+        <summary>
         Алгоритм решения квадратного уравнения.
-
+        </summary>
+        <returns>None</returns>
+        <exception cref="ValueError">
+        Возникает, если пользователь ввел нечисловое значение.
+        </exception>
+        <exception cref="ZeroDivisionError">
+        Возникает при делении на ноль (не используется в текущей реализации).
+        </exception>
+        <remarks>
         Вычисляет дискриминант и находит корни уравнения ax² + bx + c = 0.
         Обрабатывает случаи:
         - D > 0: два действительных корня
         - D = 0: один корень (кратный)
         - D < 0: действительных корней нет
-
-        Returns:
-            None
+        - a = 0: линейное уравнение
+        </remarks>
         """
         try:
             # Преобразование введенного текста в вещественные числа
@@ -169,20 +187,19 @@ class MathApp:
 
         except ValueError:
             messagebox.showerror("Ошибка", "Пожалуйста, введите корректные числа!")
-        except ZeroDivisionError:
-            messagebox.showerror("Ошибка", "Деление на ноль!")
 
     # ==================== ВКЛАДКА 2: ГРАФИК ФУНКЦИИ ====================
 
     def _setup_plot_tab(self) -> None:
         """
+        <summary>
         Настройка графических элементов вкладки визуализации функций.
-
+        </summary>
+        <returns>None</returns>
+        <remarks>
         Создает поле ввода формулы, поля для диапазона X,
         кнопку построения и холст для отображения графика.
-
-        Returns:
-            None
+        </remarks>
         """
         tk.Label(
             self.tab_plot,
@@ -226,45 +243,66 @@ class MathApp:
 
     def _plot_function(self) -> None:
         """
-               Генерация данных и отрисовка графика функции.
-
-               Строит график функции на заданном интервале с использованием
-               библиотеки matplotlib. Поддерживает математические функции:
-               sin, cos, sqrt, abs, tan.
-
-               Returns:
-                   None
-               """
+        <summary>
+        Генерация данных и отрисовка графика функции.
+        </summary>
+        <returns>None</returns>
+        <exception cref="Exception">
+        Возникает при синтаксической ошибке в формуле или недопустимых значениях.
+        </exception>
+        <remarks>
+        Строит график функции на заданном интервале с использованием
+        библиотеки matplotlib. Поддерживает математические функции:
+        sin, cos, sqrt, abs, tan, exp, log.
+        Поддерживается оператор ** для возведения в степень.
+        </remarks>
+        """
         try:
+            # Заменяем ^ на ** для корректной работы eval в Python
             function_string = self.entry_function.get().replace("^", "**")
             original_formula = self.entry_function.get()
             x_min = float(self.entry_xmin.get())
             x_max = float(self.entry_xmax.get())
 
+            # Проверка корректности диапазона
             if x_min >= x_max:
                 messagebox.showerror("Ошибка", "x_min должен быть меньше x_max!")
                 return
 
+            # Генерируем 1000 точек для плавности линии
             x_values = np.linspace(x_min, x_max, 1000)
 
+            # Разрешенные функции для использования в вводе
             safe_namespace = {
-                "x": x_values, "np": np, "sin": np.sin, "cos": np.cos,
-                "sqrt": np.sqrt, "abs": np.abs, "tan": np.tan,
-                "exp": np.exp, "log": np.log, "pi": np.pi
+                "x": x_values,
+                "np": np,
+                "sin": np.sin,
+                "cos": np.cos,
+                "sqrt": np.sqrt,
+                "abs": np.abs,
+                "tan": np.tan,
+                "exp": np.exp,
+                "log": np.log,
+                "pi": np.pi
             }
 
+            # Вычисляем значения Y
             y_values = eval(function_string, safe_namespace)
 
+            # Очищаем и перерисовываем график
             self.figure_plot.clear()
             axes = self.figure_plot.add_subplot(111)
             axes.plot(x_values, y_values, color='#2c3e50', linewidth=2.5)
 
+            # Установка сетки с шагом 1.0
             axes.xaxis.set_major_locator(MultipleLocator(1.0))
+
+            # Отрисовка главных осей координат
             axes.axhline(0, color='black', linewidth=1.2)
             axes.axvline(0, color='black', linewidth=1.2)
             axes.grid(True, which='both', linestyle='--', alpha=0.5)
 
-            # Исправленное отображение формулы
+            # Отображение формулы в заголовке
             display_formula = original_formula.replace("**", "^")
             axes.set_title(f"График функции f(x) = {display_formula}", fontsize=10)
             axes.set_xlabel("x")
@@ -272,20 +310,23 @@ class MathApp:
 
             self.canvas_plot.draw()
 
-        except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка: {e}")
+        except SyntaxError:
+            messagebox.showerror("Ошибка", "Синтаксическая ошибка в формуле!")
+        except Exception as error:
+            messagebox.showerror("Ошибка", f"Ошибка ввода функции: {error}")
 
-    # ==================== ВКЛАДКА 3: ПЕРЕСЕЧЕНИЯ ====================
+    # ==================== ВКЛАДКА 3: ПЕРЕСЕЧЕНИЕ ФУНКЦИЙ ====================
 
     def _setup_intersection_tab(self) -> None:
         """
+        <summary>
         Настройка элементов вкладки поиска точек пересечения функций.
-
+        </summary>
+        <returns>None</returns>
+        <remarks>
         Создает поля ввода для двух функций, кнопку поиска,
         метку для вывода результата и холст для отображения графиков.
-
-        Returns:
-            None
+        </remarks>
         """
         tk.Label(
             self.tab_intersect,
@@ -330,14 +371,18 @@ class MathApp:
 
     def _find_intersections(self) -> None:
         """
+        <summary>
         Математический поиск точек пересечения графиков функций.
-
+        </summary>
+        <returns>None</returns>
+        <exception cref="Exception">
+        Возникает при ошибках в математических выражениях.
+        </exception>
+        <remarks>
         Использует метод поиска нулей разности функций f(x) - g(x)
         на интервале [-10, 10] с последующей линейной интерполяцией
         для уточнения координат.
-
-        Returns:
-            None
+        </remarks>
         """
         try:
             function_f_expr = self.entry_function_f.get().replace("^", "**")
@@ -406,14 +451,15 @@ class MathApp:
 
     def _setup_numeral_system_tab(self) -> None:
         """
+        <summary>
         Настройка интерфейса конвертера систем счисления.
-
+        </summary>
+        <returns>None</returns>
+        <remarks>
         Создает поля ввода для числа, исходного и целевого оснований,
         кнопку конвертации и метку для вывода результата.
         Поддерживаются системы от 2 до 16 включительно.
-
-        Returns:
-            None
+        </remarks>
         """
         tk.Label(
             self.tab_systems,
@@ -452,14 +498,24 @@ class MathApp:
 
     def _convert_base(self) -> None:
         """
+        <summary>
         Логика перевода числа между различными системами счисления.
-
+        </summary>
+        <returns>None</returns>
+        <exception cref="ValueError">
+        Возникает, если число не соответствует указанному основанию
+        или основание выходит за пределы допустимого диапазона 2-16.
+        </exception>
+        <remarks>
         Поддерживает системы с основаниями от 2 до 16.
         Сначала переводит число из исходной системы в десятичную,
         затем из десятичной в целевую систему.
-
-        Returns:
-            None
+        Используются цифры 0-9 и буквы A-F.
+        </remarks>
+        <example>
+        Вход: число "FF", из системы 16 в систему 2
+        Выход: "11111111"
+        </example>
         """
         try:
             # Чтение входных данных
@@ -506,13 +562,14 @@ class MathApp:
 
 def main() -> None:
     """
+    <summary>
     Главная функция запуска приложения.
-
-    Создает главное окно, инициализирует приложение MathApp
+    </summary>
+    <returns>None</returns>
+    <remarks>
+    Создает главное окно Tkinter, инициализирует приложение MathApp
     и запускает главный цикл обработки событий GUI.
-
-    Returns:
-        None
+    </remarks>
     """
     # Создание главного объекта окна
     root_window = tk.Tk()
@@ -526,4 +583,12 @@ def main() -> None:
 
 # Точка входа в программу
 if __name__ == "__main__":
+    """
+    <summary>
+    Точка входа в программу.
+    </summary>
+    <remarks>
+    Вызывает функцию main() при запуске скрипта напрямую.
+    </remarks>
+    """
     main()
